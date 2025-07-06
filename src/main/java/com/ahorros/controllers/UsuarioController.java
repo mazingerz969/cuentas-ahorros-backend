@@ -2,6 +2,7 @@ package com.ahorros.controllers;
 
 import com.ahorros.dto.UsuarioDTO;
 import com.ahorros.services.UsuarioService;
+import com.ahorros.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ public class UsuarioController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
     
     /**
      * Obtiene todos los usuarios
@@ -71,17 +75,22 @@ public class UsuarioController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String password = request.get("password");
-        
+
         if (email == null || password == null) {
-            return ResponseEntity.badRequest().body("Email y contraseña son obligatorios");
+            return ResponseEntity.badRequest().body(Map.of("message", "Email y contraseña son obligatorios"));
         }
-        
+
         if (usuarioService.verificarCredenciales(email, password)) {
-            return usuarioService.obtenerPorEmail(email)
-                    .map(usuario -> ResponseEntity.ok(usuarioService.obtenerPorId(usuario.getId()).get()))
-                    .orElse(ResponseEntity.notFound().build());
+            String token = jwtUtil.generateToken(email);
+            UsuarioDTO usuario = usuarioService.obtenerPorEmail(email)
+                    .map(u -> usuarioService.obtenerPorId(u.getId()).get())
+                    .orElse(null);
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "usuario", usuario
+            ));
         } else {
-            return ResponseEntity.badRequest().body("Credenciales incorrectas");
+            return ResponseEntity.badRequest().body(Map.of("message", "Credenciales incorrectas"));
         }
     }
     
