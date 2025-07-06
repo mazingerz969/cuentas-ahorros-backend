@@ -27,4 +27,14 @@ public class HealthController {
         response.put("timestamp", System.currentTimeMillis());
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/api/healthcheck")
+    public ResponseEntity<Map<String, Object>> apiHealthCheck() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "UP");
+        response.put("message", "API Health Check - Cuenta Ahorros Backend is running");
+        response.put("timestamp", System.currentTimeMillis());
+        response.put("version", "1.0.0");
+        return ResponseEntity.ok(response);
+    }
 } 

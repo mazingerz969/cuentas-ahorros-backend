@@ -24,7 +24,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/health", "/api/health").permitAll()
+                .requestMatchers("/", "/health", "/api/health", "/api/healthcheck").permitAll()
                 .requestMatchers("/api/usuarios/**", "/api/notificaciones/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
