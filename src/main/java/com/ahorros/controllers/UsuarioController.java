@@ -159,4 +159,18 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    /**
+     * Endpoint de healthcheck temporal
+     * @return Estado de la aplicación
+     */
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> health() {
+        Map<String, Object> response = Map.of(
+            "status", "UP",
+            "message", "Usuario API is running",
+            "timestamp", System.currentTimeMillis()
+        );
+        return ResponseEntity.ok(response);
+    }
 } 
