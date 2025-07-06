@@ -52,13 +52,13 @@ public class UsuarioController {
             String password = request.get("password");
             
             if (email == null || nombre == null || password == null) {
-                return ResponseEntity.badRequest().body("Todos los campos son obligatorios");
+                return ResponseEntity.badRequest().body(Map.of("message", "Todos los campos son obligatorios"));
             }
             
             UsuarioDTO usuarioCreado = usuarioService.crearUsuario(email, nombre, password);
             return ResponseEntity.ok(usuarioCreado);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
     
