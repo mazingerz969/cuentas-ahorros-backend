@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*")
 public class UsuarioController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
     
     @Autowired
     private UsuarioService usuarioService;
@@ -76,20 +80,28 @@ public class UsuarioController {
         String email = request.get("email");
         String password = request.get("password");
 
+        logger.info("Intento de login para email: {}", email);
+
         if (email == null || password == null) {
+            logger.warn("Login fallido: email o password nulos");
             return ResponseEntity.badRequest().body(Map.of("message", "Email y contraseña son obligatorios"));
         }
 
-        if (usuarioService.verificarCredenciales(email, password)) {
+        boolean credencialesOk = usuarioService.verificarCredenciales(email, password);
+        logger.info("Resultado verificación credenciales para {}: {}", email, credencialesOk);
+
+        if (credencialesOk) {
             String token = jwtUtil.generateToken(email);
             UsuarioDTO usuario = usuarioService.obtenerPorEmail(email)
                     .map(u -> usuarioService.obtenerPorId(u.getId()).get())
                     .orElse(null);
+            logger.info("Login exitoso para {}", email);
             return ResponseEntity.ok(Map.of(
                 "token", token,
                 "usuario", usuario
             ));
         } else {
+            logger.warn("Login fallido para {}: credenciales incorrectas o usuario inactivo", email);
             return ResponseEntity.badRequest().body(Map.of("message", "Credenciales incorrectas"));
         }
     }

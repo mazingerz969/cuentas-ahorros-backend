@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UsuarioService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
     
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -135,8 +139,12 @@ public class UsuarioService {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            return usuario.isActivo() && passwordEncoder.matches(password, usuario.getPassword());
+            logger.info("Usuario encontrado para email: {}. Activo: {}", email, usuario.isActivo());
+            boolean passwordOk = passwordEncoder.matches(password, usuario.getPassword());
+            logger.info("Password correcta: {}", passwordOk);
+            return usuario.isActivo() && passwordOk;
         }
+        logger.warn("Usuario no encontrado para email: {}", email);
         return false;
     }
     
