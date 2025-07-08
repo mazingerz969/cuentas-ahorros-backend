@@ -2,6 +2,9 @@ package com.ahorros;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Clase principal de la aplicación Spring Boot para gestión de cuentas de ahorros.
@@ -34,11 +37,21 @@ public class CuentaAhorrosApplication {
         
         // Mensaje de confirmación de inicio
         System.out.println("==========================================");
-        System.out.println("🚀 APLICACIÓN DE CUENTA DE AHORROS INICIADA");
+        System.out.println("🚀 APLICACIÓN DE CUENTA DE AHORROS INICIADA - TEST DEPLOY " + System.currentTimeMillis());
         System.out.println("==========================================");
         System.out.println("📍 API disponible en: http://localhost:8080/api");
         System.out.println("📊 H2 Console: http://localhost:8080/h2-console");
         System.out.println("📚 Swagger UI: http://localhost:8080/swagger-ui.html");
         System.out.println("==========================================");
+    }
+
+    // Método temporal para imprimir el hash de 'test1234'
+    @Bean
+    public CommandLineRunner printTestPasswordHash(PasswordEncoder passwordEncoder) {
+        return args -> {
+            String rawPassword = "test1234";
+            String hash = passwordEncoder.encode(rawPassword);
+            System.out.println("Hash bcrypt para 'test1234': " + hash);
+        };
     }
 } 
